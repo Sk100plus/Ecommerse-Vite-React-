@@ -10,103 +10,74 @@ const createToken = (id) => {
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await userModel.findOne({ email });
 
     if (!user) {
-      return res.json(
-        {
-          success: false,
-          message: "User doesn't exists"
-        }
-      )
+      return res.json({ success: false, message: "User doesn't exist" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
     if (!isPasswordCorrect) {
-      return res.json({
-        success: false,
-        message: "Password is wrong"
-      })
+      return res.json({ success: false, message: "Incorrect password" });
     }
 
     const token = createToken(user._id);
 
     res.json({
       success: true,
-      token: token
-    });
-    return;
-
-  }
-  catch (error) {
-    console.log("Error while loging user: ", error);
-
-    res.json(
-      {
-        success: false,
-        message: "Error in login: " + error.message
+      token,
+      user: {
+        name: user.name,
+        email: user.email
       }
-    )
+    });
+  } catch (error) {
+    console.error("Error while logging in user: ", error);
+    res.json({ success: false, message: "Error in login: " + error.message });
   }
-}
+};
+
 
 const registerUser = async (req, res) => {
-
   try {
     const { name, email, password } = req.body;
     const userExists = await userModel.findOne({ email });
-    let errmessage = "";
 
-    if (userExists) errmessage = "User already exists";
-    else if (!validator.isEmail(email)) errmessage = "Email is not valid";
-    else if (password.length < 4) errmessage = "Password should be atleast 4 characters";
+    if (userExists) {
+      return res.json({ success: false, message: "User already exists" });
+    }
 
-    if (errmessage !== "") {
-      res.json(
-        {
-          success: false,
-          message: errmessage
-        }
-      )
-      return;
+    if (!validator.isEmail(email)) {
+      return res.json({ success: false, message: "Invalid email" });
+    }
+
+    if (password.length < 4) {
+      return res.json({ success: false, message: "Password must be at least 4 characters" });
     }
 
     // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const newUser = new userModel(
-      {
-        name,
-        email,
-        password: hashedPassword
-      }
-    )
-
+    const newUser = new userModel({ name, email, password: hashedPassword });
     const user = await newUser.save();
 
     const token = createToken(user._id);
 
-    res.json(
-      {
-        success: true,
-        token
+    res.json({
+      success: true,
+      token,
+      user: {
+        name: user.name,
+        email: user.email
       }
-    )
+    });
+  } catch (error) {
+    console.error("Error while registering user: ", error);
+    res.json({ success: false, message: error.message });
+  }
+};
 
-  }
-  catch (error) {
-    console.log("Error while registering user: ", error);
-    res.json(
-      {
-        success: false,
-        message: error.message
-      }
-    )
-  }
-}
 
 const adminLogin = async (req, res) => {
   try {

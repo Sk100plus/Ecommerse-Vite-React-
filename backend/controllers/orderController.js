@@ -1,6 +1,6 @@
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
-import Stripe from "stripe";
+// import Stripe from "stripe";
 import razorpay from "razorpay";
 import dotenv from "dotenv";
 
@@ -43,7 +43,7 @@ const placeOrder = async (req, res) => {
 };
 
 // Place order using Stripe
-const placeOrderStripe = async (req, res) => {};
+// const placeOrderStripe = async (req, res) => {};
 
 // Place order using Razorpay
 const placeOrderRazorpay = async (req, res) => {
@@ -136,15 +136,15 @@ const updateStatus = async (req, res) => {
 };
 
 // Verify Stripe Payment
-const verifyStripe = async (req, res) => {};
+// const verifyStripe = async (req, res) => {};
 
 export {
   placeOrder,
   placeOrderRazorpay,
-  placeOrderStripe,
+//   placeOrderStripe,
   allOrders,
   userOrders,
   updateStatus,
-  verifyStripe,
+//   verifyStripe,
   verifyRazorpay,
 };

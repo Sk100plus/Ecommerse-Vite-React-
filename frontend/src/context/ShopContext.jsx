@@ -15,6 +15,8 @@ const ShopContextProvider = (props) => {
     const [products, setProducts] = useState([]);
     const [token, setToken] = useState('')
 
+    const [user, setUser] = useState(    localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+    );
     const navigate = useNavigate();
 
     const addToCart = async (itemId, size) => {
@@ -134,6 +136,11 @@ const ShopContextProvider = (props) => {
     useEffect(() => {
         getProductsData();
     }, [])
+    useEffect(() => {
+        if (user) {
+          localStorage.setItem('user', JSON.stringify(user));
+        }
+      }, [user]);
 
 
     useEffect(() => {
@@ -149,7 +156,7 @@ const ShopContextProvider = (props) => {
         delivery_fee,
         search, setSearch, showSearch, setShowSearch,
         cartItems, addToCart, getCartCount, updateQuantity, getCartAmount,
-        navigate, backendUrl, setToken, token, setCartItems
+        navigate, backendUrl, setToken, token, setCartItems,user,setUser
     };
 
     return (
